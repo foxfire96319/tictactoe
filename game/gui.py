@@ -1,10 +1,12 @@
 import Tkinter as Tk
 from game_engine import win
+from player import Player as player
 import tkMessageBox
 
 
 t = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-player_bool = False
+player_x = player('X')
+player_o = player('O')
 
 
 def reset():
@@ -30,10 +32,10 @@ def board():
         for j in range(0, 3):
             font_var = 'helvetica 20'
             fill_color = 'black'
-            if t[k] == 'X':
+            if t[k] == player_x.symbol:
                 fill_color = 'blue'
                 font_var = 'helvetica 22'
-            elif t[k] == 'O':
+            elif t[k] == player_o.symbol:
                 fill_color = 'red'
                 font_var = 'helvetica 22'
             gui_canvas.create_text(x, y, text=t[k], fill=fill_color, font=font_var)
@@ -47,10 +49,12 @@ def board():
 
 def _play(num):
     if type(t[num]) == int:
-        if player_bool:
-            t[num] = 'X'
+        if player_x.player_turn:
+            t[num] = player_x.symbol
         else:
-            t[num] = 'O'
+            t[num] = player_o.symbol
+        player_x.toggle_turns()
+        player_o.toggle_turns()
         board()
 
 
