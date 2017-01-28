@@ -2,17 +2,18 @@ import Tkinter as Tk
 from game_engine import win
 from player import Player as player
 import tkMessageBox
+from ai_play import AI as ai_play
 
-
-t = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-player_x = player('X')
-player_o = player('O')
+grid = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+player_x = player()
+player_ai = ai_play()
 
 
 def reset():
     temp = 1
+    player_x.reset_turns()
     for index in xrange(0, 9):
-        t[index] = temp
+        grid[index] = temp
         temp += 1
     board()
 
@@ -32,29 +33,31 @@ def board():
         for j in range(0, 3):
             font_var = 'helvetica 20'
             fill_color = 'black'
-            if t[k] == player_x.symbol:
+            if grid[k] == player_x.symbol:
                 fill_color = 'blue'
                 font_var = 'helvetica 22'
-            elif t[k] == player_o.symbol:
+            elif grid[k] == player_ai.symbol:
                 fill_color = 'red'
                 font_var = 'helvetica 22'
-            gui_canvas.create_text(x, y, text=t[k], fill=fill_color, font=font_var)
+            gui_canvas.create_text(x, y, text=grid[k], fill=fill_color, font=font_var)
             x += 100
             k += 1
         y += 100
-    if win(t):
+    if win(grid):
         tkMessageBox.showinfo("", "You Win")
         reset()
 
 
 def _play(num):
-    if type(t[num]) == int:
-        if player_x.player_turn:
-            t[num] = player_x.symbol
-        else:
-            t[num] = player_o.symbol
-        player_x.toggle_turns()
-        player_o.toggle_turns()
+    player_x.increment_turn()
+    if type(grid[num]) == int:
+        grid[num] = player_x.symbol
+        if player_x.turns == 5:
+            tkMessageBox.showinfo("", "It's A Tie")
+            reset()
+            return
+        if not win(grid):
+            grid[player_ai.ai(grid)] = player_ai.symbol
         board()
 
 
@@ -124,6 +127,7 @@ C8.pack()
 C9.pack()
 
 board()
-
-
 gui.mainloop()
+
+
+
